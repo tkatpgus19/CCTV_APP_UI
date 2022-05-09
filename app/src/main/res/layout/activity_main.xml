@@ -4,8 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" />
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="69dp"
+            android:layout_gravity="bottom"
+            android:text="test"
+            android:id="@+id/btn"/>
+    </LinearLayout>
 </layout>

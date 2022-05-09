@@ -1,12 +1,19 @@
 package com.example.myapplication
 
+import android.animation.LayoutTransition
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.GridLayout
 import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.ScrollView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import com.example.myapplication.databinding.ActivityMainBinding
 
@@ -21,11 +28,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+        val layoutTransition = LayoutTransition()
+        layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+        layoutTransition.setDuration(200)
 
         frameList = (0..15).map { i ->
             val frame = CctvLayout(this)
-
             val layoutParams = GridLayout.LayoutParams(
                 GridLayout.spec(i / 4*2, 2, 1.0f),
                 GridLayout.spec(i % 4*2, 2, 1.0f)
@@ -40,7 +51,6 @@ class MainActivity : AppCompatActivity() {
                 8,9,12,13 -> frame.setGroup(10,0,4)
                 else -> frame.setGroup(9,4,4)
             }
-
             frame
         }
 
@@ -53,10 +63,14 @@ class MainActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
+
+        gridLayout.layoutTransition = layoutTransition
+
         (0..15).map { i ->
             gridLayout.addView(frameList[i])
         }
         binding.linearLayout.addView(gridLayout)
+
 
 
         val groupList = listOf(
@@ -80,20 +94,38 @@ class MainActivity : AppCompatActivity() {
         )
 
         var t = 0
+
+        binding.btn.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+
+            val builder = createNotificationChannel("id", "name")
+                .setTicker("Ticker")
+                .setSmallIcon(android.R.drawable.stat_sys_warning)
+                .setNumber(50)
+                .setAutoCancel(true)
+                .setContentTitle("Weapon Detected!")
+                .setContentText("앱에 와서 확인하세요")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+
+            with(NotificationManagerCompat.from(this)){
+                notify(0, builder.build())
+            }
+        }
+
+
         for(cnt in 0..2){
             for(i in groupList[cnt]) {
                 frameList[i].setLabel("${i}")
                 frameList[i].setup(50501)
 
-
                 // 그리드 한칸당 설정
                 frameList[i].setOnClickListener {
-                    var scf = frameList[i].scf
-                    var c = cnt*2
+                    val scf = frameList[i].scf
+                    var c = cnt * 2
 
-                    if(frameList[i].z == 0.0f)
-                        ;
-                    else {
+                    if(frameList[i].z != 0.0f) {
                         for (n in groupList[cnt].filter { it != i }) {
                             if (layoutParamsList[n] != null) {
                                 if (frameList[i].touchCnt == 2) {
@@ -175,12 +207,26 @@ class MainActivity : AppCompatActivity() {
                                 frameList[a].z = 0.0f
                             }
                         }
-
-                        Log.d("CIVAL", "${frameList[i].touchCnt}")
                     }
                 }
             }
         }
 
     }
+    private fun createNotificationChannel(id :String, name :String) : NotificationCompat.Builder{
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH)
+
+            manager.createNotificationChannel(channel)
+
+            NotificationCompat.Builder(this, id)
+
+        } else {
+            NotificationCompat.Builder(this)
+        }
+    }
+
 }
