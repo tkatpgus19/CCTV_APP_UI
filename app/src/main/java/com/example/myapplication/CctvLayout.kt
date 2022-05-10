@@ -1,24 +1,22 @@
 package com.example.myapplication
 
 import android.app.Activity
-import android.text.Layout
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
 
 class CctvLayout(activity: Activity) : FrameLayout(activity) {
     var isSetup = false
-
+    val activity = activity
     private val labelView: TextView
     private val statusView: TextView
     private val warningView: LinearLayout
@@ -46,7 +44,8 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
         statusView.text = "Idle"
 
         warningView = LinearLayout(activity)
-        warningView.setBackgroundColor(0xaaff0000.toInt())
+        warningView.setBackgroundColor(0xffffffff.toInt())
+
 
         setPadding(
             TypedValue.applyDimension(
@@ -54,7 +53,7 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
                 2.0f,
                 resources.displayMetrics).toInt())
 
-        setBackgroundColor(0xffffffff.toInt())
+        background = ContextCompat.getDrawable(activity, R.drawable.layout_border_normal)
 
         z = 5.0f
 
@@ -89,10 +88,8 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
     }
     fun warnning(flag: Int){
         if(flag == 1){
-            setBackgroundColor(0xffff0000.toInt())
+            background = ContextCompat.getDrawable(activity, R.drawable.layout_border_warning)
         }
-        else
-            setBackgroundColor(0xffffffff.toInt())
     }
     fun setGroup(scf: Int, startX: Int, startY: Int){
         this.scf = scf

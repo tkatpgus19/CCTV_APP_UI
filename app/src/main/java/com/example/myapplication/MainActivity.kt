@@ -112,7 +112,19 @@ class MainActivity : AppCompatActivity() {
             with(NotificationManagerCompat.from(this)){
                 notify(0, builder.build())
             }
+            frameList[2].warnning(1)
         }
+
+        val test = 6
+        var cnt = 0
+        if(test < 4)
+            cnt = 0
+        else if(test < 8)
+            cnt = 1
+        else if(test < 12)
+            cnt = 2
+        else
+            cnt = 3
 
 
         for(cnt in 0..2){
