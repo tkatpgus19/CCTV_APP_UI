@@ -116,26 +116,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         val test = 6
-        var cnt = 0
-        if(test < 4)
-            cnt = 0
-        else if(test < 8)
-            cnt = 1
-        else if(test < 12)
-            cnt = 2
-        else
-            cnt = 3
+
+        for(j in 0..test){
+            frameList[j].setLabel("${j}")
+            frameList[j].setup(50501)
+        }
 
 
-        for(cnt in 0..2){
+        for(cnt in 0..3){
             for(i in groupList[cnt]) {
-                frameList[i].setLabel("${i}")
-                frameList[i].setup(50501)
 
                 // 그리드 한칸당 설정
                 frameList[i].setOnClickListener {
                     val scf = frameList[i].scf
-                    var c = cnt * 2
 
                     if(frameList[i].z != 0.0f) {
                         for (n in groupList[cnt].filter { it != i }) {
@@ -162,7 +155,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         if (layoutParamsList[i] != null) {
-                            
+
                             // 터치가 두번째(전체화면), 다시 원래 4x4로 복귀
                             if (frameList[i].touchCnt == 2) {
                                 frameList[i].layoutParams = layoutParamsList[i]
@@ -178,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                                 for (a in groupList[4].filter { it != i }) {
                                     frameList[a].z = 5.0f
                                 }
-                            } 
+                            }
                             // 터치가 첫번째(1차확대 상태), 전체화면으로 확대
                             else {
                                 val layoutParams = GridLayout.LayoutParams(
@@ -201,8 +194,8 @@ class MainActivity : AppCompatActivity() {
                                 GridLayout.spec(frameList[i].startX, 4, 1.0f)
                             )
                             val divLayoutParams = GridLayout.LayoutParams(
-                                GridLayout.spec(testList2[c], 1, 0.5f),
-                                GridLayout.spec(testList2[c + 1], 1, 0.5f)
+                                GridLayout.spec(testList2[cnt * 2], 1, 0.5f),
+                                GridLayout.spec(testList2[cnt * 2 + 1], 1, 0.5f)
                             )
                             frameList[i].z = 5.0f
                             frameList[i].layoutParams = layoutParams
