@@ -19,7 +19,6 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
     val activity = activity
     private val labelView: TextView
     private val statusView: TextView
-    private val warningView: LinearLayout
     var scf = 0
     var startX = 0
     var startY = 0
@@ -43,9 +42,6 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
         statusView.gravity = Gravity.CENTER
         statusView.text = "Idle"
 
-        warningView = LinearLayout(activity)
-        warningView.setBackgroundColor(0xffffffff.toInt())
-
 
         setPadding(
             TypedValue.applyDimension(
@@ -64,10 +60,6 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
         addView(labelView, LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT))
-        addView(warningView, LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT)
-        )
     }
 
     fun setLabel(label: String) {
@@ -89,6 +81,9 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
     fun warnning(flag: Int){
         if(flag == 1){
             background = ContextCompat.getDrawable(activity, R.drawable.layout_border_warning)
+        }
+        else{
+            background = ContextCompat.getDrawable(activity, R.drawable.layout_border_normal)
         }
     }
     fun setGroup(scf: Int, startX: Int, startY: Int){
