@@ -144,34 +144,59 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
     }
     fun drawPhone(){
         val testList = listOf(0,4,8,12)
-        setLayoutParams(1)
+        if(size.x < size.y) {
+            setLayoutParams(1)
 
-        for(cnt in 0..15){
-            frameList[cnt].setOnClickListener {
-                if (frameList[cnt].z != 0.0f) {
-                    if (layoutParamsList[cnt] != null) {
-                        frameList[cnt].layoutParams = layoutParamsList[cnt]
-                        layoutParamsList[cnt] = null
+            for (cnt in 0..15) {
+                frameList[cnt].setOnClickListener {
+                    if (frameList[cnt].z != 0.0f) {
+                        if (layoutParamsList[cnt] != null) {
+                            frameList[cnt].layoutParams = layoutParamsList[cnt]
+                            layoutParamsList[cnt] = null
 
-                        for (a in groupList[4]) {
-                            frameList[a].z = 5.0f
-                        }
-                    } else {
-                        layoutParamsList[cnt] =
-                            frameList[cnt].layoutParams as GridLayout.LayoutParams
-                        val layoutParams = GridLayout.LayoutParams(
-                            GridLayout.spec(testList[cnt/4], 4, 0.5f),
-                            GridLayout.spec(0, 4, 0.5f)
-                        )
-                        frameList[cnt].z = 10.0f
-                        frameList[cnt].layoutParams = layoutParams
+                            for (a in groupList[4]) {
+                                frameList[a].z = 5.0f
+                            }
+                        } else {
+                            layoutParamsList[cnt] =
+                                frameList[cnt].layoutParams as GridLayout.LayoutParams
+                            val layoutParams = GridLayout.LayoutParams(
+                                GridLayout.spec(testList[cnt / 4], 4, 0.5f),
+                                GridLayout.spec(0, 4, 0.5f)
+                            )
+                            frameList[cnt].z = 10.0f
+                            frameList[cnt].layoutParams = layoutParams
 
-                        for (a in groupList[4].filter { it != cnt }) {
-                            frameList[a].z = 0.0f
+                            for (a in groupList[4].filter { it != cnt }) {
+                                frameList[a].z = 0.0f
+                            }
                         }
                     }
                 }
             }
+        }
+        else{
+            setLayoutParams(2)
+            for(cnt in 0..15){
+                frameList[cnt].setOnClickListener {
+                    if(layoutParamsList[cnt] != null){
+                        frameList[cnt].layoutParams = layoutParamsList[cnt]
+                        layoutParamsList[cnt] = null
+                        frameList[cnt].z = 5.0f
+                    }
+                    else{
+                        layoutParamsList[cnt] =
+                            frameList[cnt].layoutParams as GridLayout.LayoutParams
+                        val layoutParams = GridLayout.LayoutParams(
+                            GridLayout.spec(0,8,1.0f),
+                            GridLayout.spec(0,8,1.0f)
+                        )
+                        frameList[cnt].z = 10.0f
+                        frameList[cnt].layoutParams = layoutParams
+                    }
+                }
+            }
+
         }
 
     }
@@ -181,12 +206,16 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
         var rowCnt = 8
         var columnCnt = 8
         var sizeY = size.y
+        var sizeX = size.x
 
         // 모바일 일때
         if(flag == 1){
             num /= 2
             rowCnt *= 2
             columnCnt /= 2
+        }
+        else if(flag == 2){
+            sizeY -= 75
         }
         else
             sizeY -= 75
@@ -225,7 +254,7 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
 
         val linearLayout = LinearLayout(con)
 
-        val lp = LinearLayout.LayoutParams(size.x,sizeY)
+        val lp = LinearLayout.LayoutParams(sizeX,sizeY)
         linearLayout.layoutParams = lp
         linearLayout.addView(gridLayout)
 
