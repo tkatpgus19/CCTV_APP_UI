@@ -1,39 +1,39 @@
 package com.example.myapplication
 
 import android.animation.LayoutTransition
-import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.graphics.Point
+import android.util.Log
+import android.view.View
 import android.widget.GridLayout
 import android.widget.LinearLayout
-import androidx.databinding.DataBindingUtil
-import com.example.myapplication.databinding.ActivityMainBinding
+import android.widget.ScrollView
+import androidx.fragment.app.FragmentActivity
+import com.example.myapplication.databinding.FragmentRealtimeBinding
 
-class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize: Point) {
+class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, context: Context, camera: Int, displaySize: Point) {
     private var frameList: List<CctvLayout> = arrayListOf()
     private var layoutParamsList: MutableList<GridLayout.LayoutParams?> = MutableList(16) { null }
-    private val binding: ActivityMainBinding
-    private val act = activity
     private val con = context
     private val cam = camera
+    private val binding = binding
+    private val act = activity
     private val layoutTransition = LayoutTransition()
-    private val size = displaySize
+    private val size = getSize()
     private val groupList = listOf(
         listOf(0,1,4,5),
         listOf(2,3,6,7),
         listOf(8,9,12,13),
-        listOf(10,11,14,15),
-        listOf(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15))
+        listOf(10,11,14,15))
 
     init {
-        binding = DataBindingUtil.setContentView(act, R.layout.activity_main)
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
         layoutTransition.setDuration(200)
-
     }
 
     fun drawTablet(){
-
         val testList = listOf(
             listOf(2,4, 2,5, 3,4),
             listOf(2,3, 3,2, 3,3),
@@ -93,7 +93,7 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
 
                                 frameList[i].touchCnt = 0
 
-                                for (a in groupList[4].filter { it != i }) {
+                                for (a in (0..15).filter { it != i }) {
                                     frameList[a].z = 5.0f
                                 }
                             }
@@ -133,7 +133,7 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
 
                             frameList[i].touchCnt++
 
-                            for (a in groupList[4].filter { it != i }) {
+                            for (a in (0..15).filter { it != i }) {
                                 frameList[a].z = 0.0f
                             }
                         }
@@ -143,10 +143,7 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
         }
     }
     fun drawPhone(){
-        val testList = listOf(0,4,8,12)
-        if(size.x < size.y) {
             setLayoutParams(1)
-
             for (cnt in 0..15) {
                 frameList[cnt].setOnClickListener {
                     if (frameList[cnt].z != 0.0f) {
@@ -154,51 +151,77 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
                             frameList[cnt].layoutParams = layoutParamsList[cnt]
                             layoutParamsList[cnt] = null
 
-                            for (a in groupList[4]) {
+                            for (a in (0..15).filter {it != cnt}) {
                                 frameList[a].z = 5.0f
+                                frameList[a].layoutParams = layoutParamsList[a]
+                                layoutParamsList[a] = null
                             }
-                        } else {
+                        }
+                        else {
                             layoutParamsList[cnt] =
                                 frameList[cnt].layoutParams as GridLayout.LayoutParams
-                            val layoutParams = GridLayout.LayoutParams(
-                                GridLayout.spec(testList[cnt / 4], 4, 0.5f),
-                                GridLayout.spec(0, 4, 0.5f)
+
+                            var layoutParams = GridLayout.LayoutParams()
+
+                            layoutParams = GridLayout.LayoutParams(
+                                GridLayout.spec(cnt / 2 * 2, 4, 1.0f),
+                                GridLayout.spec(0, 4, 1.0f)
                             )
                             frameList[cnt].z = 10.0f
                             frameList[cnt].layoutParams = layoutParams
 
-                            for (a in groupList[4].filter { it != cnt }) {
+                            // 짝수
+                            if(cnt % 2 == 0) {
+                                for(a in (0..15).filter { it != cnt }){
+                                    if(a < cnt) {
+                                        layoutParamsList[a] =
+                                            frameList[a].layoutParams as GridLayout.LayoutParams
+                                        continue
+                                    }
+                                    layoutParamsList[a] =
+                                        frameList[a].layoutParams as GridLayout.LayoutParams
+
+                                        layoutParams = GridLayout.LayoutParams(
+                                            GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
+                                            GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
+                                        )
+                                    frameList[a].layoutParams = layoutParams
+                                }
+                            }
+                            // 홀수
+                            else{
+                                for(a in (0..15).filter { it != cnt }){
+                                    if(a < cnt-1) {
+                                        layoutParamsList[a] =
+                                            frameList[a].layoutParams as GridLayout.LayoutParams
+                                        continue
+                                    }
+                                    layoutParamsList[a] =
+                                        frameList[a].layoutParams as GridLayout.LayoutParams
+
+                                    if(a == cnt-1){
+                                        layoutParams = GridLayout.LayoutParams(
+                                            GridLayout.spec(frameList[a].startY + 4, 2, 1.0f),
+                                            GridLayout.spec(frameList[a].startX, 2, 1.0f)
+                                        )
+                                    }
+                                    else{
+                                        layoutParams = GridLayout.LayoutParams(
+                                            GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
+                                            GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
+                                        )
+                                    }
+                                    frameList[a].layoutParams = layoutParams
+                                }
+                            }
+
+                            for (a in (0..15).filter { it != cnt }) {
                                 frameList[a].z = 0.0f
                             }
                         }
                     }
                 }
             }
-        }
-        else{
-            setLayoutParams(2)
-            for(cnt in 0..15){
-                frameList[cnt].setOnClickListener {
-                    if(layoutParamsList[cnt] != null){
-                        frameList[cnt].layoutParams = layoutParamsList[cnt]
-                        layoutParamsList[cnt] = null
-                        frameList[cnt].z = 5.0f
-                    }
-                    else{
-                        layoutParamsList[cnt] =
-                            frameList[cnt].layoutParams as GridLayout.LayoutParams
-                        val layoutParams = GridLayout.LayoutParams(
-                            GridLayout.spec(0,8,1.0f),
-                            GridLayout.spec(0,8,1.0f)
-                        )
-                        frameList[cnt].z = 10.0f
-                        frameList[cnt].layoutParams = layoutParams
-                    }
-                }
-            }
-
-        }
-
     }
 
     private fun setLayoutParams(flag: Int){
@@ -211,33 +234,45 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
         // 모바일 일때
         if(flag == 1){
             num /= 2
-            rowCnt *= 2
+            rowCnt *= 4
             columnCnt /= 2
-        }
-        else if(flag == 2){
-            sizeY -= 75
-        }
-        else
-            sizeY -= 75
 
-        frameList = (0..15).map { i ->
-            val frame = CctvLayout(act)
-            val layoutParams = GridLayout.LayoutParams(
-                GridLayout.spec(i / num * 2, 2, 1.0f),
-                GridLayout.spec(i % num * 2, 2, 1.0f)
-            )
-            layoutParams.width = 0
-            layoutParams.height = 0
-            frame.layoutParams = layoutParams
+            frameList = (0..15).map { i ->
+                val frame = CctvLayout(act)
+                val layoutParams = GridLayout.LayoutParams(
+                    GridLayout.spec(i / num * 2, 2, 1.0f),
+                    GridLayout.spec(i % num * 2, 2, 1.0f)
+                )
+                layoutParams.width = 0
+                layoutParams.height = 0
+                frame.layoutParams = layoutParams
 
-            when(i){
-                0,1,4,5 -> frame.setGroup(6,0,0)
-                2,3,6,7 -> frame.setGroup(5,4,0)
-                8,9,12,13 -> frame.setGroup(10,0,4)
-                else -> frame.setGroup(9,4,4)
+                frame.setGroup(0,i % num * 2, i / num * 2)
+
+                frame
             }
-            frame
         }
+        else{
+            frameList = (0..15).map { i ->
+                val frame = CctvLayout(act)
+                val layoutParams = GridLayout.LayoutParams(
+                    GridLayout.spec(i / num * 2, 2, 1.0f),
+                    GridLayout.spec(i % num * 2, 2, 1.0f)
+                )
+                layoutParams.width = 0
+                layoutParams.height = 0
+                frame.layoutParams = layoutParams
+
+                when(i){
+                    0,1,4,5 -> frame.setGroup(6,0,0)
+                    2,3,6,7 -> frame.setGroup(5,4,0)
+                    8,9,12,13 -> frame.setGroup(10,0,4)
+                    else -> frame.setGroup(9,4,4)
+                }
+                frame
+            }
+        }
+
 
         val gridLayout = GridLayout(con)
         gridLayout.rowCount = rowCnt
@@ -254,15 +289,46 @@ class DrawLayout(activity: Activity, context: Context, camera: Int, displaySize:
 
         val linearLayout = LinearLayout(con)
 
-        val lp = LinearLayout.LayoutParams(sizeX,sizeY)
-        linearLayout.layoutParams = lp
-        linearLayout.addView(gridLayout)
+        if(flag == 1){
 
-        binding.linearLayout.addView(linearLayout)
+            linearLayout.layoutParams = LinearLayout.LayoutParams(sizeX, sizeY+1000)
+            linearLayout.addView(gridLayout)
+
+            val subLayout = LinearLayout(con)
+            subLayout.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            subLayout.addView(linearLayout)
+
+            val scrollView = ScrollView(con)
+            scrollView.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            scrollView.addView(subLayout)
+            binding.linearLayout.addView(scrollView)
+        }
+        else
+        {
+            linearLayout.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            linearLayout.addView(gridLayout)
+            binding.linearLayout.addView(linearLayout)
+        }
+
 
         for(j in 0..cam){
             frameList[j].setLabel("${j}")
             frameList[j].setup(50501)
         }
+    }
+    private fun getSize(): Point {
+        val display = act.windowManager.defaultDisplay
+        val size = Point()
+        display.getRealSize(size)
+        return size
     }
 }

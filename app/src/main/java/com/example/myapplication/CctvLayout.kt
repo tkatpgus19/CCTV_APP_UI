@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.app.Activity
+import android.graphics.Point
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
