@@ -38,7 +38,7 @@ class Realtime_Fragment : Fragment() {
 
         var flag = arguments?.getInt("flag")
 
-        drawLayout = DrawLayout(binding, requireActivity(), requireContext(), 13, getSize())
+        drawLayout = DrawLayout(binding, requireActivity(), requireContext(), 13)
 
 
         // 처음 앱 실행시

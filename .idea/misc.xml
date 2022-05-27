@@ -3,18 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/drawable/layout_border_normal.xml" value="0.2845" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/drawable/layout_border_warning.xml" value="0.2845" />
+        <entry key="..\:/Users/Sehyun/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/activity_main.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/Sehyun/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/fragment_realtime_.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/activity_login.xml" value="0.37135416666666665" />
         <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/activity_main.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/fragment_archive_.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/fragment_realtime_.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/layout_border_normal.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/layout_border_warning.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/menu_child_realtime.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/layout/menu_parent.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/menu/menu_child_realtime.xml" value="0.37135416666666665" />
-        <entry key="..\:/Users/a/AndroidStudioProjects/CCTV_APP_UI/app/src/main/res/menu/menu_navigation.xml" value="0.37135416666666665" />
       </map>
     </option>
   </component>

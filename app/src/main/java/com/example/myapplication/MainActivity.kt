@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity(){
         setExpandableList()
 
 
-
         /*
         var sec : Int = 0
         timer(period = 1000, initialDelay = 100){
@@ -122,7 +121,7 @@ class MainActivity : AppCompatActivity(){
     // 알림생성 함수
     private fun createNotificationChannel(id :String, name :String) : NotificationCompat.Builder{
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH)
             manager.createNotificationChannel(channel)
             NotificationCompat.Builder(this, id)

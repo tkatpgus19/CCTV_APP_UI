@@ -13,15 +13,16 @@ import android.widget.ScrollView
 import androidx.fragment.app.FragmentActivity
 import com.example.myapplication.databinding.FragmentRealtimeBinding
 
-class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, context: Context, camera: Int, displaySize: Point) {
+class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, context: Context, camera: Int) {
     private var frameList: List<CctvLayout> = arrayListOf()
     private var layoutParamsList: MutableList<GridLayout.LayoutParams?> = MutableList(16) { null }
+    val fullsizeView = LinearLayout(context)
+    val linearLayout = LinearLayout(context)
     private val con = context
     private val cam = camera
     private val binding = binding
     private val act = activity
     private val layoutTransition = LayoutTransition()
-    private val size = getSize()
     private val groupList = listOf(
         listOf(0,1,4,5),
         listOf(2,3,6,7),
@@ -148,6 +149,8 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                 frameList[cnt].setOnClickListener {
                     if (frameList[cnt].z != 0.0f) {
                         if (layoutParamsList[cnt] != null) {
+                            act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
                             frameList[cnt].layoutParams = layoutParamsList[cnt]
                             layoutParamsList[cnt] = null
 
@@ -164,9 +167,12 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                             var layoutParams = GridLayout.LayoutParams()
 
                             layoutParams = GridLayout.LayoutParams(
-                                GridLayout.spec(cnt / 2 * 2, 4, 1.0f),
-                                GridLayout.spec(0, 4, 1.0f)
+                                GridLayout.spec(cnt / 2 * 2, 4, 2.0f),
+                                GridLayout.spec(0, 4, 2.0f)
                             )
+                            layoutParams.width = 0
+                            layoutParams.height = 0
+
                             frameList[cnt].z = 10.0f
                             frameList[cnt].layoutParams = layoutParams
 
@@ -185,11 +191,14 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                                             GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
                                             GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
                                         )
+                                    layoutParams.width = 0
+                                    layoutParams.height = 0
                                     frameList[a].layoutParams = layoutParams
                                 }
                             }
                             // 홀수
                             else{
+                                //act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                                 for(a in (0..15).filter { it != cnt }){
                                     if(a < cnt-1) {
                                         layoutParamsList[a] =
@@ -211,6 +220,8 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                                             GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
                                         )
                                     }
+                                    layoutParams.width = 0
+                                    layoutParams.height = 0
                                     frameList[a].layoutParams = layoutParams
                                 }
                             }
@@ -228,8 +239,8 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         var num = 4
         var rowCnt = 8
         var columnCnt = 8
-        var sizeY = size.y
-        var sizeX = size.x
+        var sizeY = getSize().y
+        var sizeX = getSize().x
 
         // 모바일 일때
         if(flag == 1){
@@ -273,7 +284,6 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
             }
         }
 
-
         val gridLayout = GridLayout(con)
         gridLayout.rowCount = rowCnt
         gridLayout.columnCount = columnCnt
@@ -287,11 +297,11 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         }
         gridLayout.layoutTransition = layoutTransition
 
-        val linearLayout = LinearLayout(con)
+
 
         if(flag == 1){
 
-            linearLayout.layoutParams = LinearLayout.LayoutParams(sizeX, sizeY+1000)
+            linearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeY *2)
             linearLayout.addView(gridLayout)
 
             val subLayout = LinearLayout(con)
@@ -307,7 +317,7 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             scrollView.addView(subLayout)
-            binding.linearLayout.addView(scrollView)
+            binding.frameLayout.addView(scrollView)
         }
         else
         {
@@ -316,8 +326,15 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             linearLayout.addView(gridLayout)
-            binding.linearLayout.addView(linearLayout)
+            binding.frameLayout.addView(linearLayout)
         }
+
+        fullsizeView.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        fullsizeView.visibility = View.GONE
+        binding.frameLayout.addView(fullsizeView)
 
 
         for(j in 0..cam){
@@ -330,5 +347,7 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         val size = Point()
         display.getRealSize(size)
         return size
+    }
+    private fun setFullScreen(flag: Int){
     }
 }
