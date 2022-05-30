@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.app.Activity
-import android.graphics.Point
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
@@ -9,7 +8,6 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
@@ -92,4 +90,5 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
         this.startX = startX
         this.startY = startY
     }
+
 }

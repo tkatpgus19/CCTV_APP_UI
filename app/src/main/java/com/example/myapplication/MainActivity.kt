@@ -2,28 +2,17 @@ package com.example.myapplication
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(){
     private lateinit var binding: ActivityMainBinding
+    var flag = 0
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -91,7 +80,6 @@ class MainActivity : AppCompatActivity(){
             false
         }
         binding.elMenu.setOnChildClickListener{ parent, v, groupPosition, childPosition, id ->
-            var flag = 0
             when(id){
                 0L -> flag = 0
                 1L -> flag = 1
@@ -100,7 +88,6 @@ class MainActivity : AppCompatActivity(){
 
             val bundle = Bundle()
             bundle.putInt("flag", flag)
-
             val fragment = Realtime_Fragment()
             fragment.arguments = bundle
             supportFragmentManager

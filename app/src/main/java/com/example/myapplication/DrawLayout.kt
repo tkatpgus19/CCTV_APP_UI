@@ -16,9 +16,9 @@ import com.example.myapplication.databinding.FragmentRealtimeBinding
 class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, context: Context, camera: Int) {
     private var frameList: List<CctvLayout> = arrayListOf()
     private var layoutParamsList: MutableList<GridLayout.LayoutParams?> = MutableList(16) { null }
-    val fullsizeView = LinearLayout(context)
-    val linearLayout = LinearLayout(context)
     private val con = context
+    val scrollView = ScrollView(con)
+    val fullscreenView = LinearLayout(con)
     private val cam = camera
     private val binding = binding
     private val act = activity
@@ -57,6 +57,8 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                     val scf = frameList[i].scf
 
                     if(frameList[i].z != 0.0f) {
+                        act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
                         for (n in groupList[cnt].filter { it != i }) {
                             if (layoutParamsList[n] != null) {
                                 if (frameList[i].touchCnt == 2) {
@@ -100,6 +102,8 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                             }
                             // 터치가 첫번째(1차확대 상태), 전체화면으로 확대
                             else {
+                                act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
                                 val layoutParams = GridLayout.LayoutParams(
                                     GridLayout.spec(0, 8, 1.0f),
                                     GridLayout.spec(0, 8, 1.0f)
@@ -144,12 +148,17 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         }
     }
     fun drawPhone(){
-            setLayoutParams(1)
+        setLayoutParams(1)
             for (cnt in 0..15) {
                 frameList[cnt].setOnClickListener {
+                    // 터치이벤트 등록
+
+                    // 터치된 뷰만 할당
                     if (frameList[cnt].z != 0.0f) {
-                        if (layoutParamsList[cnt] != null) {
-                            act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+                        // 전체화면에서 터치했을시 원래대로 복귀
+                        if (layoutParamsList[cnt] != null && frameList[cnt].touchCnt == 2) {
+                            //
 
                             frameList[cnt].layoutParams = layoutParamsList[cnt]
                             layoutParamsList[cnt] = null
@@ -159,8 +168,10 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                                 frameList[a].layoutParams = layoutParamsList[a]
                                 layoutParamsList[a] = null
                             }
+                            frameList[cnt].touchCnt = 0
+                            Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
                         }
-                        else {
+                        else if(frameList[cnt].touchCnt == 0){
                             layoutParamsList[cnt] =
                                 frameList[cnt].layoutParams as GridLayout.LayoutParams
 
@@ -198,7 +209,6 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                             }
                             // 홀수
                             else{
-                                //act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                                 for(a in (0..15).filter { it != cnt }){
                                     if(a < cnt-1) {
                                         layoutParamsList[a] =
@@ -229,6 +239,29 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                             for (a in (0..15).filter { it != cnt }) {
                                 frameList[a].z = 0.0f
                             }
+                            frameList[cnt].touchCnt++
+                            Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
+                        }
+                        else{
+                            binding.frameLayout.removeAllViews()
+                            setLayoutParams(0)
+                            val layoutParams = GridLayout.LayoutParams(
+                                GridLayout.spec(0, 8, 1.0f),
+                                GridLayout.spec(0, 8, 1.0f)
+                            )
+                            frameList[cnt].z = 10.0f
+                            frameList[cnt].layoutParams = layoutParams
+                            frameList[cnt].touchCnt += 2
+                            Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
+
+                            act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+                            frameList[cnt].setOnClickListener {
+                                act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                                binding.frameLayout.removeAllViews()
+                                scrollView.removeAllViews()
+                                drawPhone()
+                            }
                         }
                     }
                 }
@@ -247,6 +280,9 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
             num /= 2
             rowCnt *= 4
             columnCnt /= 2
+
+            if(sizeY < getSize().x)
+                sizeY = sizeX
 
             frameList = (0..15).map { i ->
                 val frame = CctvLayout(act)
@@ -297,10 +333,9 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         }
         gridLayout.layoutTransition = layoutTransition
 
-
+        val linearLayout = LinearLayout(con)
 
         if(flag == 1){
-
             linearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeY *2)
             linearLayout.addView(gridLayout)
 
@@ -311,7 +346,7 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
             )
             subLayout.addView(linearLayout)
 
-            val scrollView = ScrollView(con)
+
             scrollView.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
@@ -329,18 +364,15 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
             binding.frameLayout.addView(linearLayout)
         }
 
-        fullsizeView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        fullsizeView.visibility = View.GONE
-        binding.frameLayout.addView(fullsizeView)
+        fullscreenView.setBackgroundColor(Color.WHITE)
+        fullscreenView.visibility = View.GONE
+        binding.frameLayout.addView(fullscreenView)
 
-
+        /*
         for(j in 0..cam){
             frameList[j].setLabel("${j}")
             frameList[j].setup(50501)
-        }
+        }*/
     }
     private fun getSize(): Point {
         val display = act.windowManager.defaultDisplay
@@ -348,6 +380,5 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         display.getRealSize(size)
         return size
     }
-    private fun setFullScreen(flag: Int){
-    }
+
 }
