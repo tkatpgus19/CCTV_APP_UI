@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.animation.LayoutTransition
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.Point
@@ -9,17 +10,17 @@ import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.ScrollView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import com.example.myapplication.databinding.FragmentRealtimeBinding
 
-class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, context: Context, camera: Int) {
+class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, context: Context) {
     private var frameList: List<CctvLayout> = arrayListOf()
+    var list = arrayListOf<Int>()
     private var layoutParamsList: MutableList<GridLayout.LayoutParams?> = MutableList(16) { null }
     private val con = context
-    val scrollView = ScrollView(con)
-    val fullscreenView = LinearLayout(con)
-    private val cam = camera
     private val binding = binding
     private val act = activity
     private val layoutTransition = LayoutTransition()
@@ -48,6 +49,30 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         var t = 0
 
         setLayoutParams(0)
+
+        for(cnt in 0..15) {
+            frameList[cnt].setOnLongClickListener {
+
+                val popupMenu = PopupMenu(con, it)
+                act.menuInflater.inflate(R.menu.camera_menu, popupMenu.menu)
+                popupMenu.show()
+                popupMenu.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.addCam -> {
+                            frameList[cnt].setLabel("${cnt}")
+                            frameList[cnt].setup(50501)
+                            true
+                        }
+                        else -> {
+                            frameList[cnt].delete()
+                            true
+                        }
+                    }
+                }
+
+                true
+            }
+        }
 
         for(cnt in 0..3){
             for(i in groupList[cnt]) {
@@ -148,124 +173,134 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         }
     }
     fun drawPhone(){
+
         setLayoutParams(1)
-            for (cnt in 0..15) {
-                frameList[cnt].setOnClickListener {
-                    // 터치이벤트 등록
 
-                    // 터치된 뷰만 할당
-                    if (frameList[cnt].z != 0.0f) {
+        for (cnt in 0..15) {
+            frameList[cnt].setOnLongClickListener {
 
-                        // 전체화면에서 터치했을시 원래대로 복귀
-                        if (layoutParamsList[cnt] != null && frameList[cnt].touchCnt == 2) {
-                            //
-
-                            frameList[cnt].layoutParams = layoutParamsList[cnt]
-                            layoutParamsList[cnt] = null
-
-                            for (a in (0..15).filter {it != cnt}) {
-                                frameList[a].z = 5.0f
-                                frameList[a].layoutParams = layoutParamsList[a]
-                                layoutParamsList[a] = null
-                            }
-                            frameList[cnt].touchCnt = 0
-                            Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
+                val popupMenu = PopupMenu(con, it)
+                act.menuInflater.inflate(R.menu.camera_menu, popupMenu.menu)
+                popupMenu.show()
+                popupMenu.setOnMenuItemClickListener {
+                    when(it.itemId){
+                        R.id.addCam -> {
+                            frameList[cnt].setLabel("${cnt}")
+                            frameList[cnt].setup(50501)
+                            list.add(cnt)
+                            true
                         }
-                        else if(frameList[cnt].touchCnt == 0){
-                            layoutParamsList[cnt] =
-                                frameList[cnt].layoutParams as GridLayout.LayoutParams
-
-                            var layoutParams = GridLayout.LayoutParams()
-
-                            layoutParams = GridLayout.LayoutParams(
-                                GridLayout.spec(cnt / 2 * 2, 4, 2.0f),
-                                GridLayout.spec(0, 4, 2.0f)
-                            )
-                            layoutParams.width = 0
-                            layoutParams.height = 0
-
-                            frameList[cnt].z = 10.0f
-                            frameList[cnt].layoutParams = layoutParams
-
-                            // 짝수
-                            if(cnt % 2 == 0) {
-                                for(a in (0..15).filter { it != cnt }){
-                                    if(a < cnt) {
-                                        layoutParamsList[a] =
-                                            frameList[a].layoutParams as GridLayout.LayoutParams
-                                        continue
-                                    }
-                                    layoutParamsList[a] =
-                                        frameList[a].layoutParams as GridLayout.LayoutParams
-
-                                        layoutParams = GridLayout.LayoutParams(
-                                            GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
-                                            GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
-                                        )
-                                    layoutParams.width = 0
-                                    layoutParams.height = 0
-                                    frameList[a].layoutParams = layoutParams
-                                }
-                            }
-                            // 홀수
-                            else{
-                                for(a in (0..15).filter { it != cnt }){
-                                    if(a < cnt-1) {
-                                        layoutParamsList[a] =
-                                            frameList[a].layoutParams as GridLayout.LayoutParams
-                                        continue
-                                    }
-                                    layoutParamsList[a] =
-                                        frameList[a].layoutParams as GridLayout.LayoutParams
-
-                                    if(a == cnt-1){
-                                        layoutParams = GridLayout.LayoutParams(
-                                            GridLayout.spec(frameList[a].startY + 4, 2, 1.0f),
-                                            GridLayout.spec(frameList[a].startX, 2, 1.0f)
-                                        )
-                                    }
-                                    else{
-                                        layoutParams = GridLayout.LayoutParams(
-                                            GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
-                                            GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
-                                        )
-                                    }
-                                    layoutParams.width = 0
-                                    layoutParams.height = 0
-                                    frameList[a].layoutParams = layoutParams
-                                }
-                            }
-
-                            for (a in (0..15).filter { it != cnt }) {
-                                frameList[a].z = 0.0f
-                            }
-                            frameList[cnt].touchCnt++
-                            Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
-                        }
-                        else{
-                            binding.frameLayout.removeAllViews()
-                            setLayoutParams(0)
-                            val layoutParams = GridLayout.LayoutParams(
-                                GridLayout.spec(0, 8, 1.0f),
-                                GridLayout.spec(0, 8, 1.0f)
-                            )
-                            frameList[cnt].z = 10.0f
-                            frameList[cnt].layoutParams = layoutParams
-                            frameList[cnt].touchCnt += 2
-                            Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
-
-                            act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
-                            frameList[cnt].setOnClickListener {
-                                act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-                                binding.frameLayout.removeAllViews()
-                                scrollView.removeAllViews()
-                                drawPhone()
-                            }
+                        else -> {
+                            frameList[cnt].delete()
+                            list.remove(cnt)
+                            true
                         }
                     }
                 }
+
+                true
             }
+            frameList[cnt].setOnClickListener {
+                // 터치이벤트 등록
+
+                // 터치된 뷰만 할당
+                if (frameList[cnt].z != 0.0f) {
+
+                    // 전체화면에서 터치했을시 원래대로 복귀
+                    if (layoutParamsList[cnt] != null && frameList[cnt].touchCnt == 2) {
+                        //
+
+                        frameList[cnt].layoutParams = layoutParamsList[cnt]
+                        layoutParamsList[cnt] = null
+
+                        for (a in (0..15).filter {it != cnt}) {
+                            frameList[a].z = 5.0f
+                            frameList[a].layoutParams = layoutParamsList[a]
+                            layoutParamsList[a] = null
+                        }
+                        frameList[cnt].touchCnt = 0
+                        Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
+                    }
+                    else if(frameList[cnt].touchCnt == 0){
+                        layoutParamsList[cnt] =
+                            frameList[cnt].layoutParams as GridLayout.LayoutParams
+
+                        var layoutParams = GridLayout.LayoutParams()
+
+                        layoutParams = GridLayout.LayoutParams(
+                            GridLayout.spec(cnt / 2 * 2, 4, 2.0f),
+                            GridLayout.spec(0, 4, 2.0f)
+                        )
+                        layoutParams.width = 0
+                        layoutParams.height = 0
+
+                        frameList[cnt].z = 10.0f
+                        frameList[cnt].layoutParams = layoutParams
+
+                        // 짝수
+                        if(cnt % 2 == 0) {
+                            for(a in (0..15).filter { it != cnt }){
+                                if(a < cnt) {
+                                    layoutParamsList[a] =
+                                        frameList[a].layoutParams as GridLayout.LayoutParams
+                                    continue
+                                }
+                                layoutParamsList[a] =
+                                    frameList[a].layoutParams as GridLayout.LayoutParams
+
+                                    layoutParams = GridLayout.LayoutParams(
+                                        GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
+                                        GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
+                                    )
+                                layoutParams.width = 0
+                                layoutParams.height = 0
+                                frameList[a].layoutParams = layoutParams
+                            }
+                        }
+                        // 홀수
+                        else{
+                            for(a in (0..15).filter { it != cnt }){
+                                if(a < cnt-1) {
+                                    layoutParamsList[a] =
+                                        frameList[a].layoutParams as GridLayout.LayoutParams
+                                    continue
+                                }
+                                layoutParamsList[a] =
+                                    frameList[a].layoutParams as GridLayout.LayoutParams
+
+                                if(a == cnt-1){
+                                    layoutParams = GridLayout.LayoutParams(
+                                        GridLayout.spec(frameList[a].startY + 4, 2, 1.0f),
+                                        GridLayout.spec(frameList[a].startX, 2, 1.0f)
+                                    )
+                                }
+                                else{
+                                    layoutParams = GridLayout.LayoutParams(
+                                        GridLayout.spec(frameList[a].startY + 2 * (a % 2 + 1), 2, 1.0f),
+                                        GridLayout.spec(frameList[a].startX + 2 - (a % 2 * 4), 2, 1.0f)
+                                    )
+                                }
+                                layoutParams.width = 0
+                                layoutParams.height = 0
+                                frameList[a].layoutParams = layoutParams
+                            }
+                        }
+
+                        for (a in (0..15).filter { it != cnt }) {
+                            frameList[a].z = 0.0f
+                        }
+                        frameList[cnt].touchCnt++
+                        Log.d("CIVAL", "${cnt},${frameList[cnt].touchCnt}")
+                    }
+                    else{
+                        val intent = Intent(con, FullscreenActivity::class.java)
+                        intent.putExtra("cnt", cnt)
+                        intent.putExtra("list", list)
+                        startActivity(con, intent, null)
+                    }
+                }
+            }
+        }
     }
 
     private fun setLayoutParams(flag: Int){
@@ -346,7 +381,7 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
             )
             subLayout.addView(linearLayout)
 
-
+            val scrollView = ScrollView(con)
             scrollView.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
@@ -364,15 +399,6 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
             binding.frameLayout.addView(linearLayout)
         }
 
-        fullscreenView.setBackgroundColor(Color.WHITE)
-        fullscreenView.visibility = View.GONE
-        binding.frameLayout.addView(fullscreenView)
-
-        /*
-        for(j in 0..cam){
-            frameList[j].setLabel("${j}")
-            frameList[j].setup(50501)
-        }*/
     }
     private fun getSize(): Point {
         val display = act.windowManager.defaultDisplay

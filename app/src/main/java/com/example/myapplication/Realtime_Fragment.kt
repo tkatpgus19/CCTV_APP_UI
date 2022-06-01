@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,10 +28,10 @@ class Realtime_Fragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_realtime_, container, false)
 
         val view = binding.root
-
         var flag = arguments?.getInt("flag")
 
-        drawLayout = DrawLayout(binding, requireActivity(), requireContext(), 15)
+        Log.d("CIVAL", "flag == ${flag}")
+        drawLayout = DrawLayout(binding, requireActivity(), requireContext())
 
 
         // 처음 앱 실행시
@@ -46,7 +47,6 @@ class Realtime_Fragment : Fragment() {
         else
             drawLayout.drawTablet()
 
-
         return view
     }
 
@@ -60,14 +60,4 @@ class Realtime_Fragment : Fragment() {
         return xlarge or large
     }
 
-    // 가로, 세로 모드 감지
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-
-        }
-        else if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-        {}
-    }
 }

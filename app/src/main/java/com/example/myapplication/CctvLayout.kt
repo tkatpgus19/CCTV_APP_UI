@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import android.app.Activity
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
@@ -13,9 +15,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
 
-class CctvLayout(activity: Activity) : FrameLayout(activity) {
+class CctvLayout(activity: Activity) : FrameLayout(activity){
     var isSetup = false
-    val activity = activity
+    val act = activity
     private val labelView: TextView
     private val statusView: TextView
     var scf = 0
@@ -77,12 +79,16 @@ class CctvLayout(activity: Activity) : FrameLayout(activity) {
         statusView.visibility = View.VISIBLE
         isSetup = true
     }
+    fun delete(){
+        statusView.text = "Idle"
+        labelView.text = ""
+    }
     fun warnning(flag: Int){
         if(flag == 1){
-            background = ContextCompat.getDrawable(activity, R.drawable.layout_border_warning)
+            background = ContextCompat.getDrawable(act, R.drawable.layout_border_warning)
         }
         else{
-            background = ContextCompat.getDrawable(activity, R.drawable.layout_border_normal)
+            background = ContextCompat.getDrawable(act, R.drawable.layout_border_normal)
         }
     }
     fun setGroup(scf: Int, startX: Int, startY: Int){
