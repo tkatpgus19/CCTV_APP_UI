@@ -8,10 +8,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.util.Log
 import android.view.View
-import android.widget.GridLayout
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.ScrollView
+import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import com.example.myapplication.databinding.FragmentRealtimeBinding
@@ -59,12 +56,22 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.addCam -> {
-                            frameList[cnt].setLabel("${cnt}")
-                            frameList[cnt].setup(50501)
+                            if(frameList[cnt].isSetup){
+                                Toast.makeText(con, "이미 추가되어있습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                            else {
+                                frameList[cnt].setLabel("${cnt}")
+                                frameList[cnt].setup(50501)
+                            }
                             true
                         }
                         else -> {
-                            frameList[cnt].delete()
+                            if(frameList[cnt].isSetup) {
+                                frameList[cnt].delete()
+                                frameList[cnt].isSetup = false
+                            }
+                            else
+                                Toast.makeText(con, "이미 제거했습니다.", Toast.LENGTH_SHORT).show()
                             true
                         }
                     }
@@ -177,6 +184,10 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
         setLayoutParams(1)
 
         for (cnt in 0..15) {
+            if(frameList[cnt].scf == 1){
+                frameList[cnt].setLabel("${cnt}")
+                frameList[cnt].setup(50501)
+            }
             frameList[cnt].setOnLongClickListener {
 
                 val popupMenu = PopupMenu(con, it)
@@ -185,14 +196,25 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                 popupMenu.setOnMenuItemClickListener {
                     when(it.itemId){
                         R.id.addCam -> {
-                            frameList[cnt].setLabel("${cnt}")
-                            frameList[cnt].setup(50501)
-                            list.add(cnt)
+                            if(frameList[cnt].isSetup){
+                                Toast.makeText(con, "이미 추가되어있습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                            else {
+                                frameList[cnt].setLabel("${cnt}")
+                                frameList[cnt].setup(50501)
+                                frameList[cnt].scf = 1
+                                list[cnt] = 1
+                            }
                             true
                         }
                         else -> {
-                            frameList[cnt].delete()
-                            list.remove(cnt)
+                            if(frameList[cnt].isSetup) {
+                                frameList[cnt].delete()
+                                frameList[cnt].isSetup = false
+                            }
+                            else
+                                Toast.makeText(con, "이미 제거했습니다.", Toast.LENGTH_SHORT).show()
+
                             true
                         }
                     }
@@ -295,7 +317,7 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                     else{
                         val intent = Intent(con, FullscreenActivity::class.java)
                         intent.putExtra("cnt", cnt)
-                        intent.putExtra("list", list)
+                        intent.putExtra("scf", frameList[cnt].scf)
                         startActivity(con, intent, null)
                     }
                 }
@@ -330,7 +352,7 @@ class DrawLayout(binding: FragmentRealtimeBinding, activity: FragmentActivity, c
                 frame.layoutParams = layoutParams
 
                 frame.setGroup(0,i % num * 2, i / num * 2)
-
+                list.add(frame.scf)
                 frame
             }
         }

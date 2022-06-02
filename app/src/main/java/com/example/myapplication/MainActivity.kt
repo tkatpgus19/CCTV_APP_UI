@@ -61,6 +61,8 @@ class MainActivity : AppCompatActivity(){
         )
 
         val expandableAdapter = ExpandableListAdapter(this, parentList, childList)
+
+
         binding.elMenu.setAdapter(expandableAdapter)
 
         binding.elMenu.setOnGroupClickListener{ parent, v, groupPosition, id ->

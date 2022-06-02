@@ -20,58 +20,34 @@ class FullscreenActivity : AppCompatActivity() {
 
         val t = findViewById<LinearLayout>(R.id.testt)
 
-        var num = 4
-        var rowCnt = 8
-        var columnCnt = 8
 
         frameList = (0..15).map { i ->
             val frame = CctvLayout(this)
-            val layoutParams = GridLayout.LayoutParams(
-                GridLayout.spec(i / num * 2, 2, 1.0f),
-                GridLayout.spec(i % num * 2, 2, 1.0f)
-            )
-            layoutParams.width = 0
-            layoutParams.height = 0
-            frame.layoutParams = layoutParams
-
-            frame
-        }
-
-        val gridLayout = GridLayout(baseContext)
-        gridLayout.rowCount = rowCnt
-        gridLayout.columnCount = columnCnt
-        gridLayout.layoutParams =
-            LinearLayout.LayoutParams(
+            frame.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
-        (0..15).map { i ->
-            gridLayout.addView(frameList[i])
+            frame
         }
+
 
         val cnt = intent.getIntExtra("cnt", 5)
-        val list = intent.getIntArrayExtra("list")
+        val scf = intent.getIntExtra("scf",0)
 
-        for(a in list!!){
-            if(a == cnt){
-                frameList[cnt].setup(1)
-                frameList[cnt].setLabel("${cnt}")
-            }
+        if(scf == 1) {
+            frameList[cnt].setup(1)
+            frameList[cnt].setLabel("${cnt}")
         }
-        frameList[cnt].layoutParams = GridLayout.LayoutParams(
-            GridLayout.spec(0, 8, 1.0f),
-            GridLayout.spec(0, 8, 1.0f)
-        )
-        frameList[cnt].z = 10.0f
-        t.addView(gridLayout)
+        else{
+            frameList[cnt].delete()
+        }
+
+        t.addView(frameList[cnt])
 
 
         frameList[cnt].setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
         }
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
     }
-
-
 }
